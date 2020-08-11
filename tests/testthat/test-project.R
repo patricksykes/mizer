@@ -1,8 +1,6 @@
 context("project method")
 
-data(NS_species_params_gears)
-data(inter)
-params <- set_multispecies_model(NS_species_params_gears, inter)
+params <- newMultispeciesParams(NS_species_params_gears, inter)
 
 # time dimension ----
 test_that("time dimension is dealt with properly", {
@@ -191,6 +189,10 @@ test_that("time dimension is dealt with properly", {
                  length(seq(from = start_year, to = end_year, by = t_save)))
     expect_identical(dimnames(sim@effort)[[1]],
                      as.character(seq(from = start_year, to = end_year, by = t_save)))
+    
+    ## No effort argument but t_start
+    sim <- project(params, t_start = 2019, t_max = 2, dt = 1)
+    expect_equal(dimnames(sim@n)$time, c("2019", "2020", "2021"))
 })
 
 
@@ -218,31 +220,11 @@ test_that("Can pass in initial species", {
 })
 
 
-# get_initial_n ----
-test_that("get_initial_n is working properly", {
-    n <- get_initial_n(params)
-    no_sp <- nrow(params@species_params)
-    for (i in 1:no_sp) {
-        expect_true(all(n[i,params@w > params@species_params$w_inf[i]] == 0))
-        expect_true(all(n[i,params@w < params@species_params$w_min[i]] == 0))
-    }
-    # Check slope of all species is the same
-    slopes <- rep(NA, no_sp)
-    for (i in 1:no_sp) {
-        n_idx <- which(n[i,] != 0)
-        slopes[i] <- (log(n[i,min(n_idx)]) - log(n[i,max(n_idx)])) / 
-          (log(params@w[min(n_idx)]) - log(params@w[max(n_idx)]))
-    }
-    expect_that(slopes, equals(rep(slopes[1],no_sp)))
-    # Check that slopes = slope0
-})
-
-
 # w_min array reference ----
 test_that("w_min array reference is working OK", {
     NS_species_params_gears$w_min <- 0.001
     NS_species_params_gears$w_min[1] <- 1
-    params2 <- set_multispecies_model(NS_species_params_gears, inter)
+    params2 <- newMultispeciesParams(NS_species_params_gears, inter)
     sim <- project(params2, effort = 1, t_max = 5)
     expect_equivalent(sim@n[6, 1, 1:(sim@params@w_min_idx[1] - 1)],
                       rep(0, sim@params@w_min_idx[1] - 1))
@@ -250,7 +232,7 @@ test_that("w_min array reference is working OK", {
 
 
 # Gear checking and sorting ----
-test_that("Gear checking and sorting is OK",{
+test_that("Gear checking and sorting is OK", {
     # Set up trait based model for easy testing ground
     no_sp <- 10
     min_w_inf <- 10
@@ -262,7 +244,11 @@ test_that("Gear checking and sorting is OK",{
     other_gears <- w_inf > 500
     gear_names <- rep("Industrial", no_sp)
     gear_names[other_gears] <- "Other"
-    params_gear <- set_trait_model(no_sp = no_sp, min_w_inf = min_w_inf, max_w_inf = max_w_inf, knife_edge_size = knife_edges, gear_names = gear_names)
+    params_gear <- newTraitParams(no_sp = no_sp, 
+                                  min_w_inf = min_w_inf, 
+                                  max_w_inf = max_w_inf, 
+                                  knife_edge_size = knife_edges, 
+                                  gear_names = gear_names)
 	  gear_names <- dimnames(params_gear@catchability)[[1]]
     # Single vector of effort
   	sim <- project(params_gear, effort = 0.3, t_max = 10)
@@ -344,7 +330,8 @@ test_that("Gear checking and sorting is OK",{
 
 # same numerical results as previously ----
 test_that("Simulation gives same numerical results as previously",{
-  params <- set_multispecies_model(NS_species_params_gears, inter)
+  params <- newMultispeciesParams(NS_species_params_gears, inter,
+                                  n = 2/3, p = 0.7, lambda = 2.8 - 2/3)
   sim <- project(params, t_max = 1)
   expect_known_value(sim@n[2, 3, ], "values/projectn")
   expect_known_value(sim@n_pp[2, ], "values/projectp")
@@ -355,32 +342,9 @@ test_that("Final result the same when called with sim or params", {
   sim <- project(params, t_max = 1)
   params@initial_n[] <- sim@n[2, , ]
   params@initial_n_pp[] <- sim@n_pp[2, ]
-  params@initial_B[] <- sim@B[2, ]
+  params@initial_n_other <- sim@n_other[2, ]
   sim1 <- project(params, t_max = 1)
   sim2 <- project(sim, t_max = 1)
   expect_identical(sim1@n[2, 3, ], sim2@n[3, 3, ])
 })
 
-# Example params ####
-test_that("Example params objects are projected correctly", {
-  sim <- project(Baltic_params, t_max = 0.3, t_save = 0.3,
-                 effort = c(small = 0.3, medium = 0.3, large = 0.7))
-  expect_equal(sim@n[2, , ], Baltic_params@initial_n[, ])
-  
-  sim <- project(Barents_params, t_max = 0.3, t_save = 0.3,
-                 effort = c(small = 1.1, medium = 0.5, large = 0.75))
-  expect_equal(sim@n[2, , ], Barents_params@initial_n[, ])
-  
-  sim <- project(Benguela_params, t_max = 0.3, t_save = 0.3,
-                 effort = c(small = 0.13, medium = 0.05, large = 0.45))
-  expect_equal(sim@n[2, , ], Benguela_params@initial_n[, ])
-  
-  sim <- project(NEUSCS_params, t_max = 0.3, t_save = 0.3,
-                 effort = c(small = 0.4, medium = 0.3, large = 0.25))
-  expect_equal(sim@n[2, , ], NEUSCS_params@initial_n[, ])
-  
-  sim <- project(NorthSea_params, t_max = 0.3, t_save = 0.3,
-                 effort = c(small = 0.6, medium = 0.6, large = 1.25))
-  expect_equal(sim@n[2, , ], NorthSea_params@initial_n[, ])
-  
-})

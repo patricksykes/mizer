@@ -4,7 +4,11 @@
 \alias{getMeanWeight}
 \title{Calculate the mean weight of the community}
 \usage{
-getMeanWeight(sim, species = 1:nrow(sim@params@species_params), ...)
+getMeanWeight(
+  sim,
+  species = seq_len(nrow(species_params(getParams(sim)))),
+  ...
+)
 }
 \arguments{
 \item{sim}{A \linkS4class{MizerSim} object}
@@ -38,9 +42,7 @@ calculation.
 }
 \examples{
 \dontrun{
-data(NS_species_params_gears)
-data(inter)
-params <- set_multispecies_model(NS_species_params_gears, inter)
+params <- newMultispeciesParams(NS_species_params_gears, inter)
 sim <- project(params, effort=1, t_max=10)
 getMeanWeight(sim)
 getMeanWeight(sim, species=c("Herring","Sprat","N.pout"))
@@ -48,9 +50,10 @@ getMeanWeight(sim, min_w = 10, max_w = 5000)
 }
 }
 \seealso{
-Other functions for calculating indicators: \code{\link{getCommunitySlope}()},
-  \code{\link{getMeanMaxWeight}()},
-  \code{\link{getProportionOfLargeFish}()}
+Other functions for calculating indicators: 
+\code{\link{getCommunitySlope}()},
+\code{\link{getMeanMaxWeight}()},
+\code{\link{getProportionOfLargeFish}()}
 }
 \concept{functions for calculating indicators}
 \concept{summary_function}

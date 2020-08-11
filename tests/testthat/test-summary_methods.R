@@ -1,11 +1,12 @@
 context("Summary methods")
 
 ## Initialisation ----
-data(NS_species_params_gears)
-data(inter)
-params <- set_multispecies_model(NS_species_params_gears, inter)
+species_params <- NS_species_params_gears
+species_params$pred_kernel_type <- "truncated_lognormal"
+params <- newMultispeciesParams(species_params, inter, min_w_pp = 1e-12,
+                                n = 2/3, p = 0.7, lambda = 2.8 - 2/3)
 sim <- project(params, effort = 1, t_max = 10)
-no_sp <- nrow(NS_species_params_gears)
+no_sp <- nrow(species_params)
 no_w <- length(params@w)
 
 # Random abundances
@@ -15,9 +16,9 @@ n_pp <- abs(rnorm(length(params@w_full)))
 
 ## get_size_range_array ----
 test_that("get_size_range_array",{
-    NS_species_params_gears$a <- 0.01
-    NS_species_params_gears$b <- 3
-    params <- set_multispecies_model(NS_species_params_gears, inter)
+    NS_species_params_gears[["a"]] <- 0.01
+    NS_species_params_gears[["b"]] <- 3
+    params <- newMultispeciesParams(NS_species_params_gears, inter)
     size_n <- get_size_range_array(params)
     expect_true(all(size_n))
     size_n <- get_size_range_array(params, min_w = 1)
@@ -78,22 +79,25 @@ test_that("get_size_range_array",{
 })
 
 # get_time_elements ----
-test_that("get_time_elements",{
-    sim <- project(params, effort=1, t_max=10, dt = 0.5, t_save = 0.5)
-    expect_equal(length(get_time_elements(sim, as.character(3:4))),
-                 dim(sim@n)[1])
-    expect_equal(length(get_time_elements(sim, 3:4)),
-                 dim(sim@n)[1])
-    expect_that(sum(get_time_elements(sim,3:4)), equals(3))
-    expect_that(sum(get_time_elements(sim,3:50)), throws_error())
-    expect_that(which(get_time_elements(sim,seq(from=3,to=4,by = 0.1))), is_equivalent_to(c(7,8,9)))
-    expect_that(length(get_time_elements(sim,seq(from=3,to=4,by = 0.1), slot_name="effort")), equals(dim(sim@effort)[1]))
+test_that("get_time_elements", {
+    sim <- project(params, effort = 1, t_max = 10, dt = 0.5, t_save = 0.5)
+    expect_identical(get_time_elements(sim, as.character(3:4)),
+                     get_time_elements(sim, 3:4))
+    expect_identical(length(get_time_elements(sim, 3:4)),
+                     dim(sim@n)[1])
+    expect_identical(sum(get_time_elements(sim, 3:4)), 3L)
+    expect_error(get_time_elements(sim, 3:50), 
+                 "Time range is outside the time range of the model")
+    expect_equivalent(which(get_time_elements(sim, seq(3, 4, by = 0.1))), 
+                      c(7,8,9))
     # What if real years are used
-    effort <- array(1, dim = c(19,4), dimnames = list(year = seq(from = 1960, to = 1969, by = 0.5), gear = c("Industrial","Pelagic","Otter","Beam")))
+    effort <- array(1, dim = c(19, 4),
+                    dimnames = list(year = seq(1960, 1969, by = 0.5), 
+                                    gear = c("Industrial","Pelagic","Otter","Beam")))
     sim <- project(params, effort = effort, t_save = 0.5)
-    expect_that(which(get_time_elements(sim,1965)), is_equivalent_to(11))
-    expect_that(which(get_time_elements(sim,"1965")), is_equivalent_to(11))
-    expect_that(which(get_time_elements(sim,1965:1969)), is_equivalent_to(11:19))
+    expect_equivalent(which(get_time_elements(sim, 1965)), 11)
+    expect_equivalent(which(get_time_elements(sim,"1965")), 11)
+    expect_equivalent(which(get_time_elements(sim, 1965:1969)), 11:19)
 })
 
 
@@ -253,7 +257,7 @@ test_that("getCommunitySlope works",{
 test_that("getDiet works with proportion = FALSE", {
     diet <- getDiet(params, n, n_pp, proportion = FALSE)
     expect_known_value(diet, "values/getDiet")
-    # Check that summing over all species, plankton and resources gives 
+    # Check that summing over all species and resource gives 
     # total consumption
     consumption <- rowSums(diet, dims = 2)
     encounter <- getEncounter(params, n, n_pp)
@@ -265,10 +269,11 @@ test_that("getDiet works with proportion = FALSE", {
 })
 
 test_that("getDiet works with proportion = TRUE", {
-    diet <- getDiet(params, n, n_pp)
+    diet <- getDiet(params)
     total <- rowSums(diet, dims = 2)
     ones <- total
-    ones[] <- 1
+    # Only check at sizes where there are actually fish
+    ones[] <- as.numeric(params@initial_n > 0)
     expect_equal(total, ones)
 })
 
@@ -289,4 +294,26 @@ test_that("getBiomass works", {
 test_that("getN works", {
     N <- getN(sim)
     expect_known_value(N, "values/getN")
+})
+
+# getGrowthCurves ----
+test_that("getGrowthCurves works with MizerSim", {
+    ps <- setInitialValues(params, sim)
+    expect_identical(getGrowthCurves(sim),
+                     getGrowthCurves(ps))
+})
+
+# summary ----
+test_that("summary works", {
+    # Check that it works also with nonstandard kernel
+    params@species_params$ppmr_min <- 100
+    params@species_params$ppmr_max <- 10000
+    params@species_params$beta <- NULL
+    params@species_params$sigma <- NULL
+    species_params(params)$pred_kernel_type <- "box"
+    expect_output(summary(params),
+                  'An object of class "MizerParams"')
+    sim <- project(params, t_max = 0.1)
+    expect_output(summary(sim),
+                  'An object of class "MizerSim"')
 })

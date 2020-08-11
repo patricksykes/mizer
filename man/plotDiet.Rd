@@ -9,32 +9,25 @@ plotDiet(object, species)
 \arguments{
 \item{object}{An object of class \linkS4class{MizerSim} or \linkS4class{MizerParams}.}
 
-\item{species}{Name or vector of names of the species to be plotted. By
-default all species are plotted.}
+\item{species}{The name of the species whose diet should be plotted}
 }
 \value{
-A ggplot2 object
+A plot
 }
 \description{
 Plot diet
 }
 \seealso{
-Other plotting functions: \code{\link{displayFrames}()},
-  \code{\link{plot,MizerSim,missing-method}},
-  \code{\link{plotBiomass}()}, \code{\link{plotFMort}()},
-  \code{\link{plotFeedingLevel}()},
-  \code{\link{plotGrowthCurves}()},
-  \code{\link{plotPredMort}()},
-  \code{\link{plotSpectra}()},
-  \code{\link{plotYieldGear}()}, \code{\link{plotYield}()},
-  \code{\link{plotlyBiomass}()},
-  \code{\link{plotlyFMort}()},
-  \code{\link{plotlyFeedingLevel}()},
-  \code{\link{plotlyGrowthCurves}()},
-  \code{\link{plotlyPredMort}()},
-  \code{\link{plotlySpectra}()},
-  \code{\link{plotlyYieldGear}()},
-  \code{\link{plotlyYield}()},
-  \code{\link{plotting_functions}}
+Other plotting functions: 
+\code{\link{plot,MizerSim,missing-method}},
+\code{\link{plotBiomass}()},
+\code{\link{plotFMort}()},
+\code{\link{plotFeedingLevel}()},
+\code{\link{plotGrowthCurves}()},
+\code{\link{plotPredMort}()},
+\code{\link{plotSpectra}()},
+\code{\link{plotYieldGear}()},
+\code{\link{plotYield}()},
+\code{\link{plotting_functions}}
 }
 \concept{plotting functions}

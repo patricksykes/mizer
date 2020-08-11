@@ -10,36 +10,46 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
 
 
 <meta property="og:title" content="Create empty MizerParams object of the right size — emptyParams" />
-<meta property="og:description" content="Sets up a valid MizerParams object with all the slots
+<meta property="og:description" content="An internal function.
+Sets up a valid MizerParams object with all the slots
 initialised and given dimension names, but with some slots left empty. This
 function is to be used by other functions to set up full parameter objects." />
-<meta name="twitter:card" content="summary" />
 
 
 <meta name="robots" content="noindex">
@@ -57,7 +67,7 @@ function is to be used by other functions to set up full parameter objects." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -71,7 +81,7 @@ function is to be used by other functions to set up full parameter objects." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mizer</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.0.1.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.0.2.9001</span>
       </span>
     </div>
 
@@ -89,8 +99,52 @@ function is to be used by other functions to set up full parameter objects." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../articles/index.html">Guides</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/model_description.html">The General Mizer Size-spectrum Model</a>
+    </li>
+    <li>
+      <a href="../articles/community_model.html">The Community Model</a>
+    </li>
+    <li>
+      <a href="../articles/trait_model.html">The Trait-Based Model</a>
+    </li>
+    <li>
+      <a href="../articles/multispecies_model.html">The Multi Species Model</a>
+    </li>
+    <li>
+      <a href="../articles/running_a_simulation.html">Running a Simulation</a>
+    </li>
+    <li>
+      <a href="../articles/exploring_the_simulation_results.html">Exploring the Simulation Results</a>
+    </li>
+    <li>
+      <a href="../articles/a_multispecies_model_of_the_north_sea.html">A Multi-Species Model Of The North Sea</a>
+    </li>
+    <li>
+      <a href="../articles/plotting.html">Using ggplot2 and plotly with mizer</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">For developers</li>
+    <li>
+      <a href="../articles/developer_vignette.html">Developer Guide</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_git.html">Working with git and GitHub</a>
+    </li>
+    <li>
+      <a href="../articles/developer_FAQ.html">Developer FAQ</a>
+    </li>
+    <li>
+      <a href="../articles/editing_website.html">Editing the Mizer Website</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../articles/publications.html">Publications</a>
@@ -101,12 +155,18 @@ function is to be used by other functions to set up full parameter objects." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/sizespectrum/mizer">
+  <a href="https://github.com/sizespectrum/mizer/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -120,18 +180,25 @@ function is to be used by other functions to set up full parameter objects." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create empty MizerParams object of the right size</h1>
-    <small class="dont-index"><a href='https://github.com/sizespectrum/mizer/edit/master/R/MizerParams-class.R'>Edit this page. &nbsp;</a> Source: <a href='https://github.com/sizespectrum/mizer/blob/master/R/MizerParams-class.R'><code>R/MizerParams-class.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/sizespectrum/mizer/blob/master/R/MizerParams-class.R'><code>R/MizerParams-class.R</code></a></small>
     <div class="hidden name"><code>emptyParams.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Sets up a valid <a href='MizerParams-class.html'>MizerParams</a> object with all the slots
+    <p>An internal function.
+Sets up a valid <a href='MizerParams-class.html'>MizerParams</a> object with all the slots
 initialised and given dimension names, but with some slots left empty. This
 function is to be used by other functions to set up full parameter objects.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>emptyParams</span>(<span class='no'>species_params</span>, <span class='kw'>no_w</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>min_w</span> <span class='kw'>=</span> <span class='fl'>0.001</span>, <span class='kw'>max_w</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>min_w_pp</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>no_w_pp</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>emptyParams</span>(
+  <span class='no'>species_params</span>,
+  <span class='kw'>gear_params</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(),
+  <span class='kw'>no_w</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>min_w</span> <span class='kw'>=</span> <span class='fl'>0.001</span>,
+  <span class='kw'>max_w</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>min_w_pp</span> <span class='kw'>=</span> <span class='fl'>1e-12</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -139,6 +206,10 @@ function is to be used by other functions to set up full parameter objects.</p>
     <tr>
       <th>species_params</th>
       <td><p>A data frame of species-specific parameter values.</p></td>
+    </tr>
+    <tr>
+      <th>gear_params</th>
+      <td><p>A data frame with gear-specific parameter values.</p></td>
     </tr>
     <tr>
       <th>no_w</th>
@@ -152,65 +223,83 @@ given in the <code>w_min</code> column of the <code>species_params</code> datafr
     <tr>
       <th>max_w</th>
       <td><p>The largest size of the consumer spectrum. By default this is
-set to the largest w_inf specified in the species_params data frame.</p></td>
+set to the largest <code>w_inf</code> specified in the <code>species_params</code> data
+frame.</p></td>
     </tr>
     <tr>
       <th>min_w_pp</th>
-      <td><p>The smallest size of the plankton spectrum.</p></td>
-    </tr>
-    <tr>
-      <th>no_w_pp</th>
-      <td><p>No longer used</p></td>
+      <td><p>The smallest size of the resource spectrum.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An empty but valid MizerParams object</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="size-grid"><a class="anchor" href="#size-grid"></a>Size grid</h2>
 
-    <p>See <code><a href='set_multispecies_model.html'>set_multispecies_model</a></code> for a function that fills the
-slots left empty by this function.</p>
+    
+
 <p>A size grid is created so that
 the log-sizes are equally spaced. The spacing is chosen so that there will be
 <code>no_w</code> fish size bins, with the smallest starting at <code>min_w</code> and the largest
 starting at <code>max_w</code>. For <code>w_full</code> additional size bins are added below
 <code>min_w</code>, with the same log size. The number of extra bins is such that
 <code>min_w_pp</code> comes to lie within the smallest bin.</p>
+    <h2 class="hasAnchor" id="changes-to-species-params"><a class="anchor" href="#changes-to-species-params"></a>Changes to species params</h2>
+
+    
+
 <p>The <code>species_params</code> slot of the returned MizerParams object may differ
 slightly from the data frame supplied as argument to this function in the
 following ways:</p><ul>
-<li><p>Default values are set for <code>w_min, w_inf, alpha, gear, interaction_p</code>.</p></li>
+<li><p>Default values are set for <code>w_min, w_inf, alpha, gear, interaction_resource</code>.</p></li>
 <li><p>The egg sizes in <code>w_min</code> are rounded down to lie on a grid point.</p></li>
 </ul><p>Note that the other characteristic sizes of the species, like <code>w_mat</code> and
 <code>w_inf</code>, are not modified to lie on grid points.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>See <code><a href='newMultispeciesParams.html'>newMultispeciesParams()</a></code> for a function that fills
+the slots left empty by this function.</p></div>
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
 
       <footer>
       <div class="copyright">
-  <p>Developed by Finlay Scott, <a href='http://www.utas.edu.au/profiles/staff/imas/julia-blanchard'>Julia Blanchard</a>, <a href='https://ken.haste.dk/'>Ken Andersen</a>, <a href='https://www.york.ac.uk/maths/staff/gustav-delius/'>Gustav Delius</a>.</p>
+  <p>Developed by <a href='https://www.york.ac.uk/maths/staff/gustav-delius/'>Gustav Delius</a>, Finlay Scott, <a href='http://www.utas.edu.au/profiles/staff/imas/julia-blanchard'>Julia Blanchard</a>, <a href='https://ken.haste.dk/'>Ken Andersen</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9101.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: '96e9641255d3fff35a4fd16d1a1bf70c',
+    indexName: 'sizespectrum_mizer',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>

@@ -135,7 +135,7 @@ server <- function(input, output, session) {
         p@species_params$R_max <- Inf
         
         # Retune the values of erepro so that we get the correct level of
-        # recruitment without stock-recruitment relationship
+        # reproduction without density dependence
         mumu <- getZ(p, p@initial_n, p@initial_n_pp, effort = fixed_effort)
         gg <- getEGrowth(p, p@initial_n, p@initial_n_pp)
         rdi <- getRDI(p, p@initial_n, p@initial_n_pp)
@@ -149,19 +149,17 @@ server <- function(input, output, session) {
         }
         
         # Set new gear for hake
-        a <- p@species_params["Hake", "a"]
-        b <- p@species_params["Hake", "b"]
         p@species_params["Hake", "l50"] <- input$l50_hake
         p@species_params["Hake", "l25"] <- input$l25_hake
         p@selectivity["sigmoid_gear", "Hake", ] <-
-            sigmoid_length(p@w, input$l25_hake, input$l50_hake, a, b)
+            sigmoid_length(p@w, input$l25_hake, input$l50_hake, 
+                           p@species_params["Hake", ])
         # Set new gear for mullet
-        a <- p@species_params["Mullet", "a"]
-        b <- p@species_params["Mullet", "b"]
         p@species_params["Mullet", "l50"] <- input$l50_mullet
         p@species_params["Mullet", "l50"] <- input$l25_mullet
         p@selectivity["sigmoid_gear", "Mullet", ] <-
-            sigmoid_length(p@w, input$l25_mullet, input$l50_mullet, a, b)
+            sigmoid_length(p@w, input$l25_mullet, input$l50_mullet, 
+                           p@species_params["Mullet", ])
         p
     })
     
@@ -471,7 +469,7 @@ ui <- fluidPage(
                     p("This unpacks a bit of the underlying mizer model of 
                       multispecies dynamics.  The grey lines are background 
                       species, each with its own dynamics;  the green line is a 
-                      plankton resource spectrum without which the whole fish 
+                      resource resource spectrum without which the whole fish 
                       assemblage would go to extinction.  The target species 
                       both eat, and are eaten by, the background species."),
                     p("In 2018, the system is at the steady state under 

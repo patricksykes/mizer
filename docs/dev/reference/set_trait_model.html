@@ -6,50 +6,48 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sets up parameters for a trait-based model — set_trait_model • mizer</title>
+<title>Deprecated function for setting up parameters for a trait-based model — set_trait_model • mizer</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script>
 
 
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="Sets up parameters for a trait-based model — set_trait_model" />
-<meta property="og:description" content="This functions creates a MizerParams object so that trait-based-type 
-models can be easily set up and run. The trait-based size spectrum model can
-be derived as a simplification of the general size-based model used in
-mizer. The species-specific parameters are the same for all species, 
-except for
-the asymptotic size, which is considered the most important trait
-characterizing a species. Other parameters are related to the asymptotic
-size. For example, the size at maturity is given by w_inf * eta, 
-where eta is
-the same for all species. For the trait-based model the number of species is
-not important. For applications of the trait-based model see Andersen &amp;amp;
-Pedersen (2010). See the mizer vignette for more details and examples
-of the trait-based model." />
-<meta name="twitter:card" content="summary" />
+
+<meta property="og:title" content="Deprecated function for setting up parameters for a trait-based model — set_trait_model" />
+<meta property="og:description" content="This function has been deprecated in favour of the function
+newTraitParams() that sets better default values." />
 
 
 <meta name="robots" content="noindex">
@@ -67,7 +65,7 @@ of the trait-based model." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -81,7 +79,7 @@ of the trait-based model." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mizer</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.0.1.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.0.2.9001</span>
       </span>
     </div>
 
@@ -99,8 +97,52 @@ of the trait-based model." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../articles/index.html">Guides</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/model_description.html">The General Mizer Size-spectrum Model</a>
+    </li>
+    <li>
+      <a href="../articles/community_model.html">The Community Model</a>
+    </li>
+    <li>
+      <a href="../articles/trait_model.html">The Trait-Based Model</a>
+    </li>
+    <li>
+      <a href="../articles/multispecies_model.html">The Multi Species Model</a>
+    </li>
+    <li>
+      <a href="../articles/running_a_simulation.html">Running a Simulation</a>
+    </li>
+    <li>
+      <a href="../articles/exploring_the_simulation_results.html">Exploring the Simulation Results</a>
+    </li>
+    <li>
+      <a href="../articles/a_multispecies_model_of_the_north_sea.html">A Multi-Species Model Of The North Sea</a>
+    </li>
+    <li>
+      <a href="../articles/plotting.html">Using ggplot2 and plotly with mizer</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">For developers</li>
+    <li>
+      <a href="../articles/developer_vignette.html">Developer Guide</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_git.html">Working with git and GitHub</a>
+    </li>
+    <li>
+      <a href="../articles/developer_FAQ.html">Developer FAQ</a>
+    </li>
+    <li>
+      <a href="../articles/editing_website.html">Editing the Mizer Website</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../articles/publications.html">Publications</a>
@@ -111,12 +153,18 @@ of the trait-based model." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/sizespectrum/mizer">
+  <a href="https://github.com/sizespectrum/mizer/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -129,34 +177,45 @@ of the trait-based model." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Sets up parameters for a trait-based model</h1>
-    <small class="dont-index"><a href='https://github.com/sizespectrum/mizer/edit/master/R/wrapper_functions.R'>Edit this page. &nbsp;</a> Source: <a href='https://github.com/sizespectrum/mizer/blob/master/R/wrapper_functions.R'><code>R/wrapper_functions.R</code></a></small>
+    <h1>Deprecated function for setting up parameters for a trait-based model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sizespectrum/mizer/blob/master/R/deprecated.R'><code>R/deprecated.R</code></a></small>
     <div class="hidden name"><code>set_trait_model.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This functions creates a <code>MizerParams</code> object so that trait-based-type 
-models can be easily set up and run. The trait-based size spectrum model can
-be derived as a simplification of the general size-based model used in
-<code>mizer</code>. The species-specific parameters are the same for all species, 
-except for
-the asymptotic size, which is considered the most important trait
-characterizing a species. Other parameters are related to the asymptotic
-size. For example, the size at maturity is given by <code>w_inf * eta</code>, 
-where <code>eta</code> is
-the same for all species. For the trait-based model the number of species is
-not important. For applications of the trait-based model see Andersen &amp;
-Pedersen (2010). See the <code>mizer</code> vignette for more details and examples
-of the trait-based model.</p>
+    <p>This function has been deprecated in favour of the function
+<code><a href='newTraitParams.html'>newTraitParams()</a></code> that sets better default values.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>set_trait_model</span>(<span class='kw'>no_sp</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>min_w_inf</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_w_inf</span> <span class='kw'>=</span> <span class='fl'>1e+05</span>,
-  <span class='kw'>no_w</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>min_w</span> <span class='kw'>=</span> <span class='fl'>0.001</span>, <span class='kw'>max_w</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>min_w_pp</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>no_w_pp</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>w_pp_cutoff</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>k0</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2</span>/<span class='fl'>3</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>0.75</span>,
-  <span class='kw'>q</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>eta</span> <span class='kw'>=</span> <span class='fl'>0.25</span>, <span class='kw'>r_pp</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>kappa</span> <span class='kw'>=</span> <span class='fl'>0.005</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>2</span> + <span class='no'>q</span> -
-  <span class='no'>n</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>ks</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>z0pre</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='fl'>1.3</span>, <span class='kw'>f0</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>knife_edge_size</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>gear_names</span> <span class='kw'>=</span> <span class='st'>"knife_edge_gear"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>set_trait_model</span>(
+  <span class='kw'>no_sp</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>min_w_inf</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>max_w_inf</span> <span class='kw'>=</span> <span class='fl'>1e+05</span>,
+  <span class='kw'>no_w</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>min_w</span> <span class='kw'>=</span> <span class='fl'>0.001</span>,
+  <span class='kw'>max_w</span> <span class='kw'>=</span> <span class='no'>max_w_inf</span> * <span class='fl'>1.1</span>,
+  <span class='kw'>min_w_pp</span> <span class='kw'>=</span> <span class='fl'>1e-10</span>,
+  <span class='kw'>w_pp_cutoff</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>k0</span> <span class='kw'>=</span> <span class='fl'>50</span>,
+  <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>2</span>/<span class='fl'>3</span>,
+  <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>0.75</span>,
+  <span class='kw'>q</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
+  <span class='kw'>eta</span> <span class='kw'>=</span> <span class='fl'>0.25</span>,
+  <span class='kw'>r_pp</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>kappa</span> <span class='kw'>=</span> <span class='fl'>0.005</span>,
+  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='fl'>2</span> + <span class='no'>q</span> - <span class='no'>n</span>,
+  <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.6</span>,
+  <span class='kw'>ks</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>z0pre</span> <span class='kw'>=</span> <span class='fl'>0.6</span>,
+  <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>30</span>,
+  <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>100</span>,
+  <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='fl'>1.3</span>,
+  <span class='kw'>f0</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>knife_edge_size</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>gear_names</span> <span class='kw'>=</span> <span class='st'>"knife_edge_gear"</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,18 +249,12 @@ spectrum is set to max_w_inf.</p></td>
     </tr>
     <tr>
       <th>min_w_pp</th>
-      <td><p>Obsolete argument because the smallest plankton size is set
+      <td><p>Obsolete argument because the smallest resource size is set
 to the smallest size at which the consumers feed.</p></td>
     </tr>
     <tr>
-      <th>no_w_pp</th>
-      <td><p>Obsolete argument that is no longer used because the number
-of plankton size bins is determined because all size bins have to
-be logarithmically equally spaced.</p></td>
-    </tr>
-    <tr>
       <th>w_pp_cutoff</th>
-      <td><p>The cut off size of the plankton spectrum. Default value
+      <td><p>The cut off size of the resource spectrum. Default value
 is 1.</p></td>
     </tr>
     <tr>
@@ -226,7 +279,7 @@ is 1.</p></td>
     </tr>
     <tr>
       <th>r_pp</th>
-      <td><p>Growth rate parameter for the plankton spectrum. Default value is 4.</p></td>
+      <td><p>Growth rate parameter for the resource spectrum. Default value is 4.</p></td>
     </tr>
     <tr>
       <th>kappa</th>
@@ -294,7 +347,20 @@ same length as the number of species. Default is 1 - no_sp.</p></td>
     <p>An object of type <code>MizerParams</code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The function has many arguments, all of which have default values. Of
+    <p>This functions creates a <code>MizerParams</code> object so that trait-based-type
+models can be easily set up and run. The trait-based size spectrum model can
+be derived as a simplification of the general size-based model used in
+<code>mizer</code>. The species-specific parameters are the same for all species,
+except for
+the asymptotic size, which is considered the most important trait
+characterizing a species. Other parameters are related to the asymptotic
+size. For example, the size at maturity is given by <code>w_inf * eta</code>,
+where <code>eta</code> is
+the same for all species. For the trait-based model the number of species is
+not important. For applications of the trait-based model see Andersen &amp;
+Pedersen (2010). See the <code>mizer</code> vignette for more details and examples
+of the trait-based model.</p>
+<p>The function has many arguments, all of which have default values. Of
 particular interest to the user are the number of species in the model and
 the minimum and maximum asymptotic sizes. The asymptotic sizes of the species
 are spread evenly on a logarithmic scale within this range.</p>
@@ -318,68 +384,53 @@ or abundance through time after the projection.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>K. H. Andersen and M. Pedersen, 2010, Damped trophic cascades
-  driven by fishing in model marine ecosystems. Proceedings of the Royal
-  Society V, Biological Sciences, 1682, 795-802.</p>
+driven by fishing in model marine ecosystems. Proceedings of the Royal
+Society V, Biological Sciences, 1682, 795-802.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='MizerParams-class.html'>MizerParams</a></p>
-<p>Other functions for setting up models: <code><a href='set_community_model.html'>set_community_model</a></code>,
-  <code><a href='set_multispecies_model.html'>set_multispecies_model</a></code>,
-  <code><a href='set_scaling_model.html'>set_scaling_model</a></code></p></div>
+    <div class='dont-index'><p>Other deprecated functions: 
+<code><a href='set_community_model.html'>set_community_model</a>()</code>,
+<code><a href='set_multispecies_model.html'>set_multispecies_model</a>()</code></p></div>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>trait_params</span> <span class='kw'>&lt;-</span> <span class='fu'>set_trait_model</span>(<span class='kw'>no_sp</span> <span class='kw'>=</span> <span class='fl'>15</span>)
-<span class='no'>init_pop</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='get_initial_n.html'>get_initial_n</a></span>(<span class='no'>trait_params</span>, <span class='kw'>n0_mult</span> <span class='kw'>=</span> <span class='fl'>0.001</span>)
-<span class='no'>sim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='project.html'>project</a></span>(<span class='no'>trait_params</span>, <span class='kw'>effort</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>t_max</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>dt</span><span class='kw'>=</span><span class='fl'>0.2</span>,
-    <span class='kw'>initial_n</span> <span class='kw'>=</span> <span class='no'>init_pop</span>, <span class='kw'>t_save</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>sim</span>)
-<span class='co'>## Set up industrial fishery that only fishes on species with w_inf &lt;= 500 g</span>
-<span class='co'>## And where the selectivity of the industrial fishery = w_inf * 0.05</span>
-<span class='no'>no_sp</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
-<span class='no'>min_w_inf</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>
-<span class='no'>max_w_inf</span> <span class='kw'>&lt;-</span> <span class='fl'>1e5</span>
-<span class='no'>w_inf</span> <span class='kw'>&lt;-</span> <span class='fl'>10</span>^<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='kw'>from</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span>(<span class='no'>min_w_inf</span>), <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span>(<span class='no'>max_w_inf</span>), <span class='kw'>length</span><span class='kw'>=</span><span class='no'>no_sp</span>)
-<span class='no'>knife_edges</span> <span class='kw'>&lt;-</span> <span class='no'>w_inf</span> * <span class='fl'>0.05</span>
-<span class='no'>industrial_gears</span> <span class='kw'>&lt;-</span> <span class='no'>w_inf</span> <span class='kw'>&lt;=</span> <span class='fl'>500</span>
-<span class='no'>other_gears</span> <span class='kw'>&lt;-</span> <span class='no'>w_inf</span> <span class='kw'>&gt;</span> <span class='fl'>500</span>
-<span class='no'>gear_names</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='st'>"Industrial"</span>, <span class='no'>no_sp</span>)
-<span class='no'>gear_names</span>[<span class='no'>other_gears</span>] <span class='kw'>&lt;-</span> <span class='st'>"Other"</span>
-<span class='no'>params_gear</span> <span class='kw'>&lt;-</span> <span class='fu'>set_trait_model</span>(<span class='kw'>no_sp</span> <span class='kw'>=</span> <span class='no'>no_sp</span>, <span class='kw'>min_w_inf</span> <span class='kw'>=</span> <span class='no'>min_w_inf</span>,
-    <span class='kw'>max_w_inf</span> <span class='kw'>=</span> <span class='no'>max_w_inf</span>, <span class='kw'>knife_edge_size</span> <span class='kw'>=</span> <span class='no'>knife_edges</span>,
-    <span class='kw'>gear_names</span> <span class='kw'>=</span> <span class='no'>gear_names</span>)
-<span class='co'>## Only turn on Industrial fishery. Set effort of the Other gear to 0</span>
-<span class='no'>sim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='project.html'>project</a></span>(<span class='no'>params_gear</span>, <span class='kw'>t_max</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>effort</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>Industrial</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>Other</span> <span class='kw'>=</span> <span class='fl'>0</span>))
-}</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
 
       <footer>
       <div class="copyright">
-  <p>Developed by Finlay Scott, <a href='http://www.utas.edu.au/profiles/staff/imas/julia-blanchard'>Julia Blanchard</a>, <a href='https://ken.haste.dk/'>Ken Andersen</a>, <a href='https://www.york.ac.uk/maths/staff/gustav-delius/'>Gustav Delius</a>.</p>
+  <p>Developed by <a href='https://www.york.ac.uk/maths/staff/gustav-delius/'>Gustav Delius</a>, Finlay Scott, <a href='http://www.utas.edu.au/profiles/staff/imas/julia-blanchard'>Julia Blanchard</a>, <a href='https://ken.haste.dk/'>Ken Andersen</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9101.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
    </div>
 
   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: '96e9641255d3fff35a4fd16d1a1bf70c',
+    indexName: 'sizespectrum_mizer',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+
 
 
   </body>
