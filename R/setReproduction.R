@@ -58,12 +58,13 @@
 #' }
 #' 
 #' \subsection{Reproductive efficiency}{
-#' The reproductive efficiency, i.e., the proportion of energy allocated to
+#' The reproductive efficiency \eqn{\epsilon}, i.e., the proportion of energy allocated to
 #' reproduction that results in egg biomass, is set through the `erepro`
 #' column in the species_params data frame. If that is not provided, the default
 #' is set to 1 (which you will want to override). The offspring biomass divided
 #' by the egg biomass gives the rate of egg production, returned by
-#' [getRDI()].
+#' [getRDI()]:
+#' \deqn{R_{di} = \frac{\epsilon}{2 w_{min}} \int N(w)  E_r(w) \psi(w) \, dw}{R_di = (\epsilon/(2 w_min)) \int N(w)  E_r(w) \psi(w) dw}
 #' }
 #' 
 #' \subsection{Density dependence}{
@@ -121,6 +122,7 @@
 #' dff <- melt(df, id.vars = "Size", 
 #'             variable.name = "Type", 
 #'             value.name = "Proportion")
+#' library(ggplot2)
 #' ggplot(dff) + geom_line(aes(x = Size, y = Proportion, colour = Type))
 #' }
 setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
@@ -177,15 +179,9 @@ setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
         assert_that(all(species_params$w_mat > species_params$w_min))
         
         # Set defaults for w_mat25
-        if (!("w_mat25" %in% colnames(species_params))) {
-            species_params$w_mat25 <- 
-                species_params$w_mat / (3 ^ (1 / 10))
-        }
-        missing <- is.na(species_params$w_mat25)
-        if (any(missing)) {
-            species_params$w_mat25[missing] <- 
-                species_params$w_mat[missing] / (3 ^ (1 / 10))
-        }
+        species_params <- set_species_param_default(
+            species_params, "w_mat25",       
+            species_params$w_mat / (3 ^ (1 / 10)))
         # Check w_mat25
         assert_that(all(species_params$w_mat25 > species_params$w_min))
         assert_that(all(species_params$w_mat25 < species_params$w_mat))
@@ -210,7 +206,8 @@ setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
         
         # If maturity is protected by a comment, keep the old value
         if (!is.null(comment(params@maturity))) {
-            if (any(params@maturity != maturity)) {
+            if (!isTRUE(all.equal(params@maturity, maturity,
+                                  check.attributes = FALSE))) {
                 message("The maturity ogive has been commented and therefore will ",
                         "not be recalculated from the species parameters.")
             }
@@ -220,7 +217,8 @@ setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
     assert_that(all(maturity >= 0 & maturity <= 1))
     
     # Need to update psi because it contains maturity as a factor
-    if (any(params@maturity != maturity)) {
+    if (!isTRUE(all.equal(params@maturity, maturity,
+                          check.attributes = FALSE))) {
         params@psi[] <- params@psi / params@maturity * maturity
         params@psi[is.nan(params@psi)] <- 0
     }
@@ -259,7 +257,8 @@ setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
     assert_that(all(psi >= 0 & psi <= 1))
     
     if (!is.null(comment(params@psi))) {
-        if (any(params@psi != psi)) {
+        if (!isTRUE(all.equal(params@psi, psi,
+                              check.attributes = FALSE))) {
             message("The reproductive proportion has been commented and therefore ",
                     "will not be recalculated from the species parameters.")
         }

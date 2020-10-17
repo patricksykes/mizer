@@ -30,7 +30,7 @@ newMultispeciesParams(
   lambda = 2.05,
   w_pp_cutoff = 10,
   resource_dynamics = "resource_semichemostat",
-  gear_params = data.frame(),
+  gear_params = NULL,
   selectivity = NULL,
   catchability = NULL,
   initial_effort = NULL
@@ -167,20 +167,18 @@ automatically added when the \code{MizerParams} object is created. For these
 parameters you can also specify values for only some species and leave the
 other entries as NA and the missing values will be set to the defaults.
 
+If you are not happy with any of the species parameter values used you can
+always change them later with \code{\link[=species_params<-]{species_params<-()}}.
+
 All the parameters will be mentioned in the following sections.
 }
 
 \section{Changes to species params}{
 
 The \code{species_params} slot of the returned MizerParams object may differ
-slightly from the data frame supplied as argument to this function in the
-following ways:
-\itemize{
-\item Default values are set for \code{w_min, w_inf, alpha, gear, interaction_resource}.
-\item The egg sizes in \code{w_min} are rounded down to lie on a grid point.
-}
-Note that the other characteristic sizes of the species, like \code{w_mat} and
-\code{w_inf}, are not modified to lie on grid points.
+slightly from the data frame supplied as argument to this function because
+default values are set for
+\verb{w_min, w_inf, alpha, gear, interaction_resource}.
 }
 
 \section{Size grid}{
@@ -452,12 +450,13 @@ So finally we have
 }
 
 \subsection{Reproductive efficiency}{
-The reproductive efficiency, i.e., the proportion of energy allocated to
+The reproductive efficiency \eqn{\epsilon}, i.e., the proportion of energy allocated to
 reproduction that results in egg biomass, is set through the \code{erepro}
 column in the species_params data frame. If that is not provided, the default
 is set to 1 (which you will want to override). The offspring biomass divided
 by the egg biomass gives the rate of egg production, returned by
-\code{\link[=getRDI]{getRDI()}}.
+\code{\link[=getRDI]{getRDI()}}:
+\deqn{R_{di} = \frac{\epsilon}{2 w_{min}} \int N(w)  E_r(w) \psi(w) \, dw}{R_di = (\epsilon/(2 w_min)) \int N(w)  E_r(w) \psi(w) dw}
 }
 
 \subsection{Density dependence}{

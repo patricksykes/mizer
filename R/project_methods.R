@@ -15,16 +15,16 @@
 #'   \itemize{
 #'     \item encounter from [mizerEncounter()]
 #'     \item feeding_level from [mizerFeedingLevel()]
+#'     \item e from [mizerEReproAndGrowth()]
+#'     \item e_repro from [mizerERepro()]
+#'     \item e_growth from [mizerEGrowth()]
 #'     \item pred_rate from [mizerPredRate()]
 #'     \item pred_mort from [mizerPredMort()]
 #'     \item f_mort from [mizerFMort()]
 #'     \item mort from [mizerMort()]
-#'     \item resource_mort from [mizerResourceMort()]
-#'     \item e from [mizerEReproAndGrowth()]
-#'     \item e_repro from [mizerERepro()]
-#'     \item e_growth from [mizerEGrowth()]
 #'     \item rdi from [mizerRDI()]
 #'     \item rdd from [BevertonHoltRDD()]
+#'     \item resource_mort from [mizerResourceMort()]
 #'   }
 #' However you can replace any of these rate functions by your own rate
 #' function if you wish, see [setRateFunction()] for details.
@@ -47,6 +47,7 @@ mizerRates <- function(params, n, n_pp, n_other,
                        t = 0, effort, rates_fns, ...) {
     r <- list()
     
+    ## Growth ----
     # Calculate rate E_{e,i}(w) of encountered food
     r$encounter <- rates_fns$Encounter(
         params, n = n, n_pp = n_pp, n_other = n_other, t = t, ...)
@@ -58,33 +59,6 @@ mizerRates <- function(params, n, n_pp, n_other,
     r$e <- rates_fns$EReproAndGrowth(
         params, n = n, n_pp = n_pp, n_other = n_other,
         encounter = r$encounter, feeding_level = r$feeding_level, t = t, ...)
-    
-    ## Calculate all mortalities, before negative e values are turned into zero
-    #  in getERepro() and getEGrowth() functions
-    # Calculate the predation rate
-    r$pred_rate <- rates_fns$PredRate(
-        params, n = n, n_pp = n_pp, n_other = n_other,
-        feeding_level = r$feeding_level, t = t, ...)
-    # Calculate predation mortality on fish \mu_{p,i}(w)
-    r$pred_mort <- rates_fns$PredMort(
-        params, n = n, n_pp = n_pp, n_other = n_other,
-        pred_rate = r$pred_rate, t = t, ...)
-    
-    # Calculate mortality on the resource spectrum
-    r$resource_mort <- rates_fns$ResourceMort(
-        params, n = n, n_pp = n_pp, n_other = n_other,
-        pred_rate = r$pred_rate, t = t, ...)
-    
-    # Calculate fishing mortality
-    r$f_mort <- rates_fns$FMort(
-        params, n = n, n_pp = n_pp, n_other = n_other, 
-        effort = effort, t = t, ...)
-    # Calculate total mortality \mu_i(w)
-    r$mort <- rates_fns$Mort(
-        params, n = n, n_pp = n_pp, n_other = n_other,
-        f_mort = r$f_mort, pred_mort = r$pred_mort, t = t, ...)
-    
-    ## Now calculate energy for growth and reproduction
     # Calculate the energy for reproduction
     r$e_repro <- rates_fns$ERepro(
         params, n = n, n_pp = n_pp, n_other = n_other, 
@@ -94,15 +68,41 @@ mizerRates <- function(params, n, n_pp, n_other,
         params, n = n, n_pp = n_pp, n_other = n_other,
         e_repro = r$e_repro, e = r$e, t = t, ...)
     
-    # R_{p,i}
+    ## Mortality ----
+    # Calculate the predation rate
+    r$pred_rate <- rates_fns$PredRate(
+        params, n = n, n_pp = n_pp, n_other = n_other,
+        feeding_level = r$feeding_level, t = t, ...)
+    # Calculate predation mortality on fish \mu_{p,i}(w)
+    r$pred_mort <- rates_fns$PredMort(
+        params, n = n, n_pp = n_pp, n_other = n_other,
+        pred_rate = r$pred_rate, t = t, ...)
+    # Calculate fishing mortality
+    r$f_mort <- rates_fns$FMort(
+        params, n = n, n_pp = n_pp, n_other = n_other, 
+        effort = effort, t = t, 
+        e_growth = r$e_growth, pred_mort = r$pred_mort, ...)
+    # Calculate total mortality \mu_i(w)
+    r$mort <- rates_fns$Mort(
+        params, n = n, n_pp = n_pp, n_other = n_other,
+        f_mort = r$f_mort, pred_mort = r$pred_mort, t = t, ...)
+    
+    ## Reproduction ----
+    # R_di
     r$rdi <- rates_fns$RDI(
         params, n = n, n_pp = n_pp, n_other = n_other,
         e_growth = r$e_growth,
         mort = r$mort,
         e_repro = r$e_repro, t = t, ...)
-    # R_i
+    # R_dd
     r$rdd <- rates_fns$RDD(
         rdi = r$rdi, species_params = params@species_params, ...)
+    
+    ## Resource ----
+    # Calculate mortality on the resource spectrum
+    r$resource_mort <- rates_fns$ResourceMort(
+        params, n = n, n_pp = n_pp, n_other = n_other,
+        pred_rate = r$pred_rate, t = t, ...)
     
     return(r)
 }
@@ -161,7 +161,6 @@ mizerRates <- function(params, n, n_pp, n_other,
 #' same arguments.
 #' 
 #' @inheritParams mizerRates
-#' @param t The current time. Unused
 #' @param ... Unused
 #'   
 #' @return A named two dimensional array (predator species x predator size) with
@@ -236,7 +235,6 @@ mizerEncounter <- function(params, n, n_pp, n_other, t, ...) {
     return(encounter)
 }
 
-
 #' Get feeding level needed to project standard mizer model
 #' 
 #' You would not usually call this function directly but instead use
@@ -283,7 +281,6 @@ mizerEncounter <- function(params, n, n_pp, n_other, t, ...) {
 mizerFeedingLevel <- function(params, n, n_pp, n_other, t, encounter, ...) {
     return(encounter / (encounter + params@intake_max))
 }
-
 
 #' Get energy rate available for reproduction and growth  needed to project 
 #' standard mizer model
@@ -341,6 +338,85 @@ mizerEReproAndGrowth <- function(params, n, n_pp, n_other, t, encounter,
     sweep((1 - feeding_level) * encounter, 1,
           params@species_params$alpha, "*", check.margin = FALSE) - 
         params@metab
+}
+
+#' Get energy rate available for reproduction needed to project standard mizer 
+#' model
+#'
+#' Calculates the energy rate (grams/year) available for reproduction after
+#' growth and metabolism have been accounted for.
+#' You would not usually call this
+#' function directly but instead use [getERepro()], which then calls this
+#' function unless an alternative function has been registered, see below.
+#' 
+#' @section Your own reproduction rate function:
+#' By default [getERepro()] calls [mizerERepro()]. However you can
+#' replace this with your own alternative reproduction rate function. If 
+#' your function is called `"myERepro"` then you register it in a MizerParams
+#' object `params` with
+#' ```
+#' params <- setRateFunction(params, "ERepro", "myERepro")
+#' ```
+#' Your function will then be called instead of [mizerERepro()], with the
+#' same arguments.
+#' 
+#' @inheritParams mizerRates
+#' @param e A two dimensional array (species x size) holding the energy available
+#'   for reproduction and growth as calculated by [mizerEReproAndGrowth()].
+#'
+#' @return A two dimensional array (species x size) holding
+#' \deqn{\psi_i(w)E_{r.i}(w)}
+#' where \eqn{E_{r.i}(w)} is the rate at which energy becomes available for
+#' growth and reproduction, calculated with [mizerEReproAndGrowth()],
+#' and \eqn{\psi_i(w)} is the proportion of this energy that is used for
+#' reproduction. This proportion is taken from the `params` object and is
+#' set with [setReproduction()].
+#' @export
+#' @family mizer rate functions
+mizerERepro <- function(params, n, n_pp, n_other, t, e, ...) {
+    # Because getEReproAndGrowth can return negative values, 
+    # we add an extra line here 
+    e[e < 0] <- 0 # Do not allow negative growth
+    
+    params@psi * e
+}
+
+#' Get energy rate available for growth needed to project standard mizer model
+#'
+#' Calculates the energy rate \eqn{g_i(w)} (grams/year) available by species and
+#' size for growth after metabolism, movement and reproduction have been
+#' accounted for. Used by [project()] for performing simulations.
+#' You would not usually call this
+#' function directly but instead use [getEGrowth()], which then calls this
+#' function unless an alternative function has been registered, see below.
+#' 
+#' @section Your own growth rate function:
+#' By default [getEGrowth()] calls [mizerEGrowth()]. However you can
+#' replace this with your own alternative growth rate function. If 
+#' your function is called `"myEGrowth"` then you register it in a MizerParams
+#' object `params` with
+#' ```
+#' params <- setRateFunction(params, "EGrowth", "myEGrowth")
+#' ```
+#' Your function will then be called instead of [mizerEGrowth()], with the
+#' same arguments.
+#' 
+#' @inheritParams mizerRates
+#' @param e The energy available for reproduction and growth as calculated by
+#'   [getEReproAndGrowth()].
+#' @param e_repro The energy available for reproduction as calculated by
+#'   [getERepro()].
+#'   
+#' @return A two dimensional array (species x size) with the growth rates.
+#' @export
+#' @family mizer rate functions
+mizerEGrowth <- function(params, n, n_pp, n_other, t, e_repro, e, ...) {
+    # Because getEReproAndGrowth can return negative values, we add an 
+    # extra line here 
+    e[e < 0] <- 0 # Do not allow negative growth
+    
+    # energy for growth is intake - energy for reproduction
+    e - e_repro
 }
 
 
@@ -452,41 +528,6 @@ mizerPredMort <- function(params, n, n_pp, n_other, t, pred_rate, ...) {
     return((base::t(params@interaction) %*% pred_rate)[, idx_sp, drop = FALSE])
 }
 
-#' Get predation mortality rate for resource needed to project standard mizer 
-#' model
-#' 
-#' Calculates the predation mortality rate \eqn{\mu_p(w)} on the resource
-#' spectrum by resource size (in units 1/year).
-#' You would not usually call this
-#' function directly but instead use [getResourceMort()], which then calls this
-#' function unless an alternative function has been registered, see below.
-#' 
-#' @section Your own resource mortality function:
-#' By default [getResourceMort()] calls [mizerResourceMort()]. However you can
-#' replace this with your own alternative resource mortality function. If 
-#' your function is called `"myResourceMort"` then you register it in a MizerParams
-#' object `params` with
-#' ```
-#' params <- setRateFunction(params, "ResourceMort", "myResourceMort")
-#' ```
-#' Your function will then be called instead of [mizerResourceMort()], with the
-#' same arguments.
-#' 
-#' @inheritParams mizerRates
-#' @param pred_rate A two dimensional array (predator species x prey size) with
-#'   the predation rate, where the prey size runs over fish community plus
-#'   resource spectrum.
-#'
-#' @return A vector of mortality rate by resource size.
-#' @family mizer rate functions
-#' @export
-mizerResourceMort <- 
-    function(params, n, n_pp, n_other, t, pred_rate, ...) {
-
-    return(as.vector(params@species_params$interaction_resource %*% pred_rate))
-}
-
-
 #' Get the fishing mortality by time, gear, species and size needed to project 
 #' standard mizer model
 #'
@@ -535,12 +576,17 @@ mizerFMortGear <- function(params, effort) {
 #' 
 #' @inheritParams mizerRates
 #' @param effort A vector with the effort for each fishing gear.
+#' @param e_growth An array (species x size) with the energy available for
+#'   growth as calculated by [getEGrowth()]. Unused.
+#' @param pred_mort A two dimensional array (species x size) with the predation
+#'   mortality as calculated by [getPredMort()]. Unused.
 #'
 #' @return An array (species x size) with the fishing mortality.
 #' @note Here: fishing mortality = catchability x selectivity x effort.
 #' @export
 #' @family mizer rate functions
-mizerFMort <- function(params, effort, ...) {
+mizerFMort <- function(params, n, n_pp, n_other, t, effort,
+                       e_growth, pred_mort, ...) {
     colSums(mizerFMortGear(params, effort))
 }
 
@@ -594,97 +640,22 @@ mizerMort <- function(params, n, n_pp, n_other, t, f_mort, pred_mort, ...){
 }
 
 
-#' Get energy rate available for reproduction needed to project standard mizer 
-#' model
-#'
-#' Calculates the energy rate (grams/year) available for reproduction after
-#' growth and metabolism have been accounted for.
-#' You would not usually call this
-#' function directly but instead use [getERepro()], which then calls this
-#' function unless an alternative function has been registered, see below.
-#' 
-#' @section Your own reproduction rate function:
-#' By default [getERepro()] calls [mizerERepro()]. However you can
-#' replace this with your own alternative reproduction rate function. If 
-#' your function is called `"myERepro"` then you register it in a MizerParams
-#' object `params` with
-#' ```
-#' params <- setRateFunction(params, "ERepro", "myERepro")
-#' ```
-#' Your function will then be called instead of [mizerERepro()], with the
-#' same arguments.
-#' 
-#' @inheritParams mizerRates
-#' @param e A two dimensional array (species x size) holding the energy available
-#'   for reproduction and growth as calculated by [mizerEReproAndGrowth()].
-#'
-#' @return A two dimensional array (species x size) holding
-#' \deqn{\psi_i(w)E_{r.i}(w)}
-#' where \eqn{E_{r.i}(w)} is the rate at which energy becomes available for
-#' growth and reproduction, calculated with [mizerEReproAndGrowth()],
-#' and \eqn{\psi_i(w)} is the proportion of this energy that is used for
-#' reproduction. This proportion is taken from the `params` object and is
-#' set with [setReproduction()].
-#' @export
-#' @family mizer rate functions
-mizerERepro <- function(params, n, n_pp, n_other, t, e, ...) {
-    # Because getEReproAndGrowth can return negative values, 
-    # we add an extra line here 
-    e[e < 0] <- 0 # Do not allow negative growth
-    
-    params@psi * e
-}
-
-#' Get energy rate available for growth needed to project standard mizer model
-#'
-#' Calculates the energy rate \eqn{g_i(w)} (grams/year) available by species and
-#' size for growth after metabolism, movement and reproduction have been
-#' accounted for. Used by [project()] for performing simulations.
-#' You would not usually call this
-#' function directly but instead use [getEGrowth()], which then calls this
-#' function unless an alternative function has been registered, see below.
-#' 
-#' @section Your own growth rate function:
-#' By default [getEGrowth()] calls [mizerEGrowth()]. However you can
-#' replace this with your own alternative growth rate function. If 
-#' your function is called `"myEGrowth"` then you register it in a MizerParams
-#' object `params` with
-#' ```
-#' params <- setRateFunction(params, "EGrowth", "myEGrowth")
-#' ```
-#' Your function will then be called instead of [mizerEGrowth()], with the
-#' same arguments.
-#' 
-#' @inheritParams mizerRates
-#' @param e The energy available for reproduction and growth as calculated by
-#'   [getEReproAndGrowth()].
-#' @param e_repro The energy available for reproduction as calculated by
-#'   [getERepro()].
-#'   
-#' @return A two dimensional array (species x size) with the growth rates.
-#' @export
-#' @family mizer rate functions
-mizerEGrowth <- function(params, n, n_pp, n_other, t, e_repro, e, ...) {
-    # Because getEReproAndGrowth can return negative values, we add an 
-    # extra line here 
-    e[e < 0] <- 0 # Do not allow negative growth
-    
-    # energy for growth is intake - energy for reproduction
-    e - e_repro
-}
-
-
 #' Get density-independent rate of reproduction needed to project standard
 #' mizer model
 #'
-#' Calculates the density-independent rate of total egg production \eqn{R_{p.i}}
-#' (units 1/year) before density dependence, by species. This is obtained by
-#' taking the total rate at which energy is invested in reproduction,
-#' multiplying by the reproductive efficiency `erepro` and dividing by the egg
-#' size `w_min`, and by a factor of two to account for the two sexes.
+#' Calculates the density-independent rate of total egg production 
+#' \eqn{R_{di}}{R_di} (units 1/year) before density dependence, by species. 
 #' You would not usually call this
 #' function directly but instead use [getRDI()], which then calls this
 #' function unless an alternative function has been registered, see below.
+#' 
+#' This rate is obtained by taking the per capita rate \eqn{E_r(w)\psi(w)} at
+#' which energy is invested in reproduction, as calculated by [getERepro()],
+#' multiplying it by the number of individuals\eqn{N(w)} and integrating over all sizes
+#' \eqn{w} and then multiplying by the reproductive efficiency \eqn{\epsilon}
+#' and dividing by the egg size `w_min`, and by a factor of two to account for
+#' the two sexes:
+#' \deqn{R_{di} = \frac{\epsilon}{2 w_{min}} \int N(w)  E_r(w) \psi(w) \, dw}{R_di = (\epsilon/(2 w_min)) \int N(w)  E_r(w) \psi(w) dw}
 #' 
 #' Used by [getRDD()] to calculate the actual, density dependent rate.
 #' See [setReproduction()] for more details.
@@ -724,11 +695,15 @@ mizerRDI <- function(params, n, n_pp, n_other, t,
 
 #' Beverton Holt function to calculate density-dependent reproduction rate
 #'
-#' Takes the density-independent rates \eqn{R_p} of egg production and returns
-#' reduced, density-dependent reproduction rates \eqn{R} given as \deqn{R = R_p
-#' \frac{R_{max}}{R_p + R_{max}}}{R = R_p R_{max}/(R_p + R_{max})} where
-#' \eqn{R_{max}} are the maximum possible reproduction rates that must be
+#' Takes the density-independent rates \eqn{R_{di}}{R_di} of egg production (as
+#' calculated by [getRDI()]) and returns
+#' reduced, density-dependent reproduction rates \eqn{R_{dd}}{R_dd} given as 
+#' \deqn{R_{dd} = R_{di}
+#' \frac{R_{max}}{R_{di} + R_{max}}}{R_dd = R_di R_max/(R_di + R_max)} where
+#' \eqn{R_{max}}{R_max} are the maximum possible reproduction rates that must be
 #' specified in a column in the species parameter dataframe.
+#' (All quantities in the above equation are species-specific but we dropped
+#' the species index for simplicity.)
 #'
 #' This is only one example of a density-dependence. You can write your own
 #' function based on this example, returning different density-dependent
@@ -736,10 +711,10 @@ mizerRDI <- function(params, n, n_pp, n_other, t,
 #' and [SheperdRDD()]. For more explanation see
 #' [setReproduction()].
 #'
-#' @param rdi Vector of density-independent reproduction rates \eqn{R_p} for all
-#'   species.
+#' @param rdi Vector of density-independent reproduction rates 
+#'   \eqn{R_{di}}{R_di} for all species.
 #' @param species_params A species parameter dataframe. Must contain a column
-#'   R_max holding the maximum reproduction rate \eqn{R_{max}} for each species.
+#'   R_max holding the maximum reproduction rate \eqn{R_{max}}{R_max} for each species.
 #' @param ... Unused
 #'
 #' @return Vector of density-dependent reproduction rates.
@@ -754,12 +729,12 @@ BevertonHoltRDD <- function(rdi, species_params, ...) {
 
 #' Ricker function to calculate density-dependent reproduction rate
 #' 
-#' Takes the density-independent rates \eqn{R_p} of egg production and returns
-#' reduced, density-dependent rates \eqn{R} given as
-#' \deqn{R = R_p \exp{- b R_p}}
+#' Takes the density-independent rates \eqn{R_{di}}{R_di} of egg production and returns
+#' reduced, density-dependent rates \eqn{R_{dd}}{R_dd} given as
+#' \deqn{R_{dd} = R_{di} \exp{- b R_{di}}}{R_dd = R_di \exp{- b R_di}}
 #' 
-#' @param rdi Vector of density-independent reproduction rates \eqn{R_p} for
-#'   all species.
+#' @param rdi Vector of density-independent reproduction rates 
+#'   \eqn{R_{di}}{R_di} for all species.
 #' @param species_params A species parameter dataframe. Must contain a column
 #'   `ricker_b` holding the coefficient b.
 #' @param ... Unused
@@ -776,12 +751,12 @@ RickerRDD <- function(rdi, species_params, ...) {
 
 #' Sheperd function to calculate density-dependent reproduction rate
 #' 
-#' Takes the density-independent rates \eqn{R_p} of egg production and returns
-#' reduced, density-dependent rates \eqn{R} as
-#' \deqn{R = \frac{R_p}{1+(b\ R_p)^c}}{R = R_p / (1 + (b R_p)^c)}
+#' Takes the density-independent rates \eqn{R_{di}}{R_di} of egg production and returns
+#' reduced, density-dependent rates \eqn{R_{dd}}{R_dd} given as
+#' \deqn{R_{dd} = \frac{R_{di}}{1+(b\ R_{di})^c}}{R_dd = R_di / (1 + (b R_di)^c)}
 #' 
-#' @param rdi Vector of density-independent reproduction rates \eqn{R_p} for
-#'   all species.
+#' @param rdi Vector of density-independent reproduction rates 
+#'   \eqn{R_{di}}{R_di} for all species.
 #' @param species_params A species parameter dataframe. Must contain columns
 #'   `sheperd_b` and `sheperd_c` with the parameters b and c.
 #' @param ... Unused
@@ -800,8 +775,8 @@ SheperdRDD <- function(rdi, species_params, ...) {
 #' 
 #' Simply returns its `rdi` argument.
 #' 
-#' @param rdi Vector of density-independent reproduction rates \eqn{R_p} for
-#'   all species.
+#' @param rdi Vector of density-independent reproduction rates 
+#'   \eqn{R_{di}}{R_di} for all species.
 #' @param ... Not used.
 #' 
 #' @return Vector of density-dependent reproduction rates.
@@ -811,13 +786,12 @@ noRDD <- function(rdi, ...) {
     return(rdi)
 }
 
-
 #' Give constant reproduction rate
 #'
 #' Simply returns the value from `species_params$constant_reproduction`.
 #'
-#' @param rdi Vector of density-independent reproduction rates \eqn{R_p} for all
-#'   species.
+#' @param rdi Vector of density-independent reproduction rates 
+#'   \eqn{R_{di}}{R_di} for all species.
 #' @param species_params A species parameter dataframe. Must contain a column
 #'   `constant_reproduction`.
 #' @param ... Unused
@@ -828,3 +802,38 @@ noRDD <- function(rdi, ...) {
 constantRDD <- function(rdi, species_params, ...){
     return(species_params$constant_reproduction)
 }
+
+
+#' Get predation mortality rate for resource needed to project standard mizer 
+#' model
+#' 
+#' Calculates the predation mortality rate \eqn{\mu_p(w)} on the resource
+#' spectrum by resource size (in units 1/year).
+#' You would not usually call this
+#' function directly but instead use [getResourceMort()], which then calls this
+#' function unless an alternative function has been registered, see below.
+#' 
+#' @section Your own resource mortality function:
+#' By default [getResourceMort()] calls [mizerResourceMort()]. However you can
+#' replace this with your own alternative resource mortality function. If 
+#' your function is called `"myResourceMort"` then you register it in a MizerParams
+#' object `params` with
+#' ```
+#' params <- setRateFunction(params, "ResourceMort", "myResourceMort")
+#' ```
+#' Your function will then be called instead of [mizerResourceMort()], with the
+#' same arguments.
+#' 
+#' @inheritParams mizerRates
+#' @param pred_rate A two dimensional array (predator species x prey size) with
+#'   the predation rate, where the prey size runs over fish community plus
+#'   resource spectrum.
+#'
+#' @return A vector of mortality rate by resource size.
+#' @family mizer rate functions
+#' @export
+mizerResourceMort <- 
+    function(params, n, n_pp, n_other, t, pred_rate, ...) {
+        
+        return(as.vector(params@species_params$interaction_resource %*% pred_rate))
+    }

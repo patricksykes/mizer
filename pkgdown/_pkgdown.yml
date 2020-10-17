@@ -69,6 +69,8 @@ reference:
     with the following functions. This is useful while tuning the model and for
     investigating the impact of changes in parameters.
   contents:
+  - species_params
+  - gear_params
   - setParams
   - setPredKernel
   - getPredKernel
@@ -80,8 +82,9 @@ reference:
   - setReproduction
   - setFishing
   - setResource
+  - resource_params
   - setInitialValues
-  - setRmax
+  - setBevertonHolt
 - title: Running simulations
   contents:
   - project
@@ -123,6 +126,7 @@ reference:
   - setLinetypes
 - title: Calculating rates
   contents:
+  - getRates
   - getEncounter
   - getEGrowth
   - getERepro
@@ -207,6 +211,8 @@ reference:
   - MizerSim
   - getParams
 - title: Example parameter sets
+  desc: More example parameter sets are available via 
+    <https://sizespectrum.org/mizerExamples>
   contents:
   - NS_params
   - NS_species_params

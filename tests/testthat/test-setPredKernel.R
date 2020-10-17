@@ -3,8 +3,8 @@ no_sp <- nrow(params@species_params)
 
 ## setPredKernel ----
 test_that("setPredKernel works", {
-    expect_identical(setPredKernel(params), params)
-    expect_identical(setPredKernel(params, pred_kernel = NULL), 
+    expect_equal(setPredKernel(params), params)
+    expect_equal(setPredKernel(params, pred_kernel = NULL), 
                      params)
     params@species_params$pred_kernel_type <- "box"
     params@species_params$ppmr_min <- 2
@@ -29,6 +29,8 @@ test_that("Comment works on pred kernel", {
     params_c <- setPredKernel(params, pred_kernel = pred_kernel)
     expect_identical(comment(params_c@pred_kernel), "test")
 })
+
+# getPredKernel ----
 test_that("getPredKernel has correct dimnames",{
     pred_kernel <- getPredKernel(params)
     expect_identical(dimnames(pred_kernel)$sp, 
@@ -37,6 +39,13 @@ test_that("getPredKernel has correct dimnames",{
                      dimnames(params@initial_n)$w)
     expect_identical(dimnames(pred_kernel)$w_prey, 
                      as.character(signif(params@w_full, 3)))
+})
+test_that("getting and setting pred kernel leads to same dynamics" ,{
+    params <- NS_params
+    params <- setPredKernel(params, pred_kernel = getPredKernel(params))
+    sim1 <- project(NS_params, t_max = 0.1)
+    sim2 <- project(params, t_max = 0.1)
+    expect_equal(finalN(sim1), finalN(sim2), tolerance = 1e-4)
 })
 
 

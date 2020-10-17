@@ -40,12 +40,20 @@ validMizerParams <- function(object) {
     }
     
     # Check that the last entries of w_full and dw_full agree with w and dw
-    if (any(object@w[] != object@w_full[w_idx])) {
+    if (!isTRUE(all.equal(object@w[], object@w_full[w_idx],
+                          check.attributes = FALSE))) {
         msg <- "The later entries of w_full should be equal to those of w."
         errors <- c(errors, msg)
     }
-    if (any(object@dw[] != object@dw_full[w_idx])) {
+    if (!isTRUE(all.equal(object@dw[], object@dw_full[w_idx],
+                          check.attributes = FALSE))) {
         msg <- "The later entries of dw_full should be equal to those of dw."
+        errors <- c(errors, msg)
+    }
+    # Check w_min_idx
+    if (any(object@species_params$w_min < object@w[object@w_min_idx]) ||
+        any(object@species_params$w_min > object@w[object@w_min_idx + 1])) {
+        msg <- "The `w_min_idx` should point to the start of the size bin containing the egg size `w_min`."
         errors <- c(errors, msg)
     }
 
@@ -426,14 +434,9 @@ remove(validMizerParams)
 #' 
 #' @section Changes to species params:
 #' The `species_params` slot of the returned MizerParams object may differ
-#' slightly from the data frame supplied as argument to this function in the
-#' following ways:
-#' \itemize{
-#'   \item Default values are set for \code{w_min, w_inf, alpha, gear, interaction_resource}.
-#'   \item The egg sizes in `w_min` are rounded down to lie on a grid point.
-#' }
-#' Note that the other characteristic sizes of the species, like `w_mat` and
-#' `w_inf`, are not modified to lie on grid points.
+#' slightly from the data frame supplied as argument to this function because
+#' default values are set for 
+#' `w_min, w_inf, alpha, gear, interaction_resource`.
 #' 
 #' @param species_params A data frame of species-specific parameter values.
 #' @param gear_params A data frame with gear-specific parameter values.
@@ -560,15 +563,7 @@ emptyParams <- function(species_params,
     vec1 <- as.numeric(rep(NA, no_w_full))
     names(vec1) <- signif(w_full, 3)
     
-    # Round down w_min to lie on grid points and store the indices of these
-    # grid points in w_min_idx
-    w_min_idx <- as.vector(suppressWarnings(
-        tapply(species_params$w_min, 1:no_sp,
-               function(w_min, wx) max(which(wx <= w_min)), wx = w)))
-    # Due to rounding errors this might happen:
-    w_min_idx[w_min_idx == -Inf] <- 1
-    names(w_min_idx) <- species_names
-    species_params$w_min <- w[w_min_idx]
+    w_min_idx <- get_w_min_idx(species_params, w)
     
     # Colour and linetype scales ----
     # for use in plots
@@ -806,7 +801,7 @@ validParams <- function(params) {
     # Check that params has all the slots
     # Can't use `slotnames(params)` to find out which slots params actually has
     # because `slotnames()` just looks at the class definition. 
-    has_slot <- sapply(slotNames(NS_params),
+    has_slot <- sapply(slotNames(mizer::NS_params),
                       function(name) .hasSlot(params, name))
     if (!all(has_slot) ||
         "interaction_p" %in% names(params@species_params) ||
@@ -814,6 +809,20 @@ validParams <- function(params) {
         params <- upgradeParams(params)
         warning("You need to upgrade your MizerParams object with `upgradeParams()`.")
     }
+    params@w_min_idx <- get_w_min_idx(params@species_params, params@w)
     validObject(params)
     params
+}
+
+# helper function to calculate w_min_idx slot
+get_w_min_idx <- function(species_params, w) {
+    # Round down w_min to lie on grid points and store the indices of these
+    # grid points in w_min_idx
+    w_min_idx <- as.vector(suppressWarnings(
+        tapply(species_params$w_min, seq_len(nrow(species_params)),
+               function(w_min, wx) max(which(wx <= w_min)), wx = w)))
+    # Due to rounding errors this might happen:
+    w_min_idx[w_min_idx == -Inf] <- 1
+    names(w_min_idx) <- as.character(species_params$species)
+    w_min_idx
 }
